@@ -1,30 +1,9 @@
-#include<algorithm>
-#include<bitset>
 #include<cassert>
-#include<cctype>
-#include<cfloat>
-#include<climits>
-#include<cmath>
 #include<cstdio>
-#include<cstdlib>
 #include<cstring>
-#include<ctime>
-#include<deque>
-#include<functional>
-#include<iostream>
-#include<limits>
-#include<list>
-#include<map>
 #include<queue>
-#include<set>
-#include<stack>
-#include<vector>
-#define endl '\n'
 
-const long double PI = acos(-1.L);
 using namespace std;
-template<class T> T maximize(T &a, const T &b) { return a = max(a, b); }
-template<class T> T minimize(T &a, const T &b) { return a = min(a, b); }
 
 typedef unsigned char uint8_t;
 
@@ -74,9 +53,7 @@ public:
             j = state[j].fail;
           size_t k = state[j].go[i];
           state[v].fail = k;
-          state[v].output.insert(state[v].output.end(),
-                                 state[k].output.begin(),
-                                 state[k].output.end());
+          state[v].output.insert(state[v].output.end(), state[k].output.begin(), state[k].output.end());
           q.push(v);
         } else
           v = state[state[u].fail].go[i];
@@ -88,7 +65,7 @@ public:
     assert(0<=x && x<state.size() && 0<=y && y<sigma);
     return state[x].go[y];
   }
-  inline const vector<short>& output(size_t x) const {
+  inline const vector<short>& output(int x) const {
     assert(0<=x && x<size());
     return state[x].output;
   }
@@ -106,65 +83,95 @@ public:
   }
 };
 
-inline char c2i(char c) {
-  switch(c) {
-    case 'A':
-      return 0;
-    case 'C':
-      return 1;
-    case 'G':
-      return 2;
-    default:
-      assert(c=='T');
-      return 3;
-  }
-};
+inline int min(int a, int b, int c, int d) { return min(min(a, b), min(c, d)); }
 
-inline char i2c(char i) {
-  switch(i) {
-    case 0:
-      return 'A';
-    case 1:
-      return 'C';
-    case 2:
-      return 'G';
-    default:
-      assert(i==3);
-      return 'T';
-  }
+int r, c, n, i, j;
+char A[1000][1001], B[1001];
+struct Res { short x, y; char z; } res[1000];
+AC<26> ac;
+
+void fA(size_t x, short y) { res[y].x = r-x-1; res[y].y = i; res[y].z = 'A'; }
+void fB(size_t x, short y) {
+  res[y].x = min(i, r-1)-x;
+  res[y].y = max(0, i-r+1)+x;
+  res[y].z = 'B';
+}
+void fC(size_t x, short y) { res[y].x = i; res[y].y = x; res[y].z = 'C'; }
+void fD(size_t x, short y) {
+  res[y].x = max(i-c+1, 0)+x;
+  res[y].y = max(0, c-i-1)+x;
+  res[y].z = 'D';
+}
+void fE(size_t x, short y) { res[y].x = x; res[y].y = i; res[y].z = 'E'; }
+void fF(size_t x, short y) {
+  res[y].x = max(0, i-c+1)+x;
+  res[y].y = min(i, c-1)-x;
+  res[y].z = 'F';
+}
+void fG(size_t x, short y) { res[y].x = i; res[y].y = c-x-1; res[y].z = 'G'; }
+void fH(size_t x, short y) {
+  res[y].x = min(i, r-1)-x;
+  res[y].y = min(c-1, c+r-2-i)-x;
+  res[y].z = 'H';
 }
 
-short n;
-unsigned A[1001][921];
-char B[1001];
-AC<4> ac;
-
-int main() {
-  for(short kase = 1; scanf("%hd", &n), n; kase++) {
-    ac.clear();
-    while(n--) {
-      scanf("%*c%s", B);
-      size_t _ = strlen(B);
-      for(char *i = B; i!=B+_; i++)
-        *i = c2i(*i);
-      ac.insertPattern(B, B+_);
-    }
-    ac.construct();
-    scanf("%*c%s", B);
-    size_t _ = strlen(B);
-    memset(A, -1, sizeof(A));
-    A[0][0] = 0;
-    for(int i = 0; i<_; i++)
-      for(int j = 0; j < ac.size(); j++)
-        if(A[i][j]!=UINT_MAX)
-          for(short k = 0; k < 4; k++)
-            if(!ac.output(ac.go(j, k)).size())
-              A[i+1][ac.go(j, k)]
-              = min(A[i+1][ac.go(j, k)], A[i][j]+(c2i(B[i])!=k));
-    unsigned res = UINT_MAX;
-    for(int j = 0; j<ac.size(); j++)
-      res = min(res, A[_][j]);
-    printf("Case %hd: %d\n", kase, res);
+int main(){
+  scanf("%d%d%d", &r, &c, &n);
+  for(int i = 0; i < r; i++) {
+    scanf("%s", A[i]);
+    for(char *j = A[i]; *j; j++)
+      *j -= 'A';
   }
+  ac.clear();
+  for(int i = 0; i < n; i++) {
+    scanf("%s", B);
+    size_t _ = strlen(B);
+    for(char *j = B; j!=B+_; j++)
+      *j -= 'A';
+    ac.insertPattern(B, B+_);
+  }
+  ac.construct();
+  for(i = 0; i < c; i++) {
+    for(j = 0; j < r; j++)
+      B[j] = A[r-1-j][i];
+    ac.match(B, B+r, fA);
+  }
+  for(i = 0; i < r+c-1; i++) {
+    for(j = 0; j<min(i+1, r, c, r+c-i-1); j++)
+      B[j] = A[min(i, r-1)-j][max(0, i-r+1)+j];
+    ac.match(B, B+min(i+1, r, c, r+c-i-1), fB);
+  }
+  for(i = 0; i < r; i++) {
+    for(j = 0; j < c; j++)
+      B[j] = A[i][j];
+    ac.match(B, B+c, fC);
+  }
+  for(i = 0; i < r+c-1; i++) {
+    for(j = 0; j<min(i+1, r, c, r+c-i-1); j++)
+      B[j] = A[max(i-c+1, 0)+j][max(c-1-i, 0)+j];
+    ac.match(B, B+min(i+1, r, c, r+c-i-1), fD);
+  }
+  for(i = 0; i < c; i++) {
+    for(j = 0; j < r; j++)
+      B[j] = A[j][i];
+    ac.match(B, B+r, fE);
+  }
+  for(i = 0; i < r+c-1; i++) {
+    for(j = 0; j < min(r, c, i+1, r+c-1-i); j++)
+      B[j] = A[max(0, i-c+1)+j][min(i, c-1)-j];
+    ac.match(B, B+min(i+1, r, c, r+c-i-1), fF);
+  }
+  for(i = 0; i < r; i++) {
+    for(j = 0; j < c; j++)
+      B[j] = A[i][c-1-j];
+    ac.match(B, B+c, fG);
+  }
+  for(i = 0; i < r+c-1; i++) {
+    for(j = 0; j<min(i+1, r, c, r+c-i-1); j++)
+      B[j] = A[min(i, r-1)-j][min(c-1, c+r-2-i)-j];
+    ac.match(B, B+min(i+1, r, c, r+c-i-1), fH);
+  }
+  for(int i = 0; i < n; i++)
+    printf("%hd %hd %c\n", res[i].x, res[i].y, res[i].z);
   return 0;
 }
