@@ -1,12 +1,12 @@
-program euler_project;
+program euler028;
 
 const
    nn = 500;
 
 var
-   form			       : array[-nn-1..nn+1,-nn-1..nn+1] of longword;
+   form : array[-nn-1..nn+1,-nn-1..nn+1] of longword;
    up, down, left, right, i, j : integer;
-   n, sum		       : longword;
+   n, sum : longword;
 			  
 begin
    n:=2;
@@ -38,9 +38,10 @@ begin
 	 inc(n);
       end;
    until n>=sqr(nn*2+1);
-   for i:=-nn to nn do for j:=-nn to nn do if (i = j) or (i = -j) then inc(sum,form[i,j]);
+   for i:=-nn to nn do
+      for j:=-nn to nn do
+         if (i = j) or (i = -j) then
+            inc(sum,form[i,j]);
    writeln(sum);
    readln;
 end.
-
-669171001

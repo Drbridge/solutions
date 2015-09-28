@@ -1,7 +1,9 @@
+program euler010;
+
 var
-sum :int64;
-i, j : longint;
-can :boolean;
+   sum : int64;
+   i, j : longint;
+   can : boolean;
 
 begin
    sum:=0;
@@ -9,13 +11,12 @@ begin
       can:=true;
       for j:=2 to trunc(sqrt(i)) do
 	 if i mod j=0 then begin
-	    can:=false;
+            can:=false;
 	    break;
 	 end;
-      if can then sum:=sum+i;
+      if can then
+         sum := sum+i;
    end;
    writeln(sum);
-   readln;
 end.
 
-The result is 142913828922.

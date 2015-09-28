@@ -2,7 +2,7 @@
 #include <cstring>
 using namespace std;
 
-short a[15][15]=
+short a[15][15] =
   {{  7,  53, 183, 439, 863, 497, 383, 563,  79, 973, 287,  63, 343, 169, 583},
    {627, 343, 773, 959, 943, 767, 473, 103, 699, 303, 957, 703, 583, 639, 913},
    {447, 283, 463,  29,  23, 487, 463, 993, 119, 883, 327, 493, 423, 159, 743},
@@ -21,7 +21,8 @@ short a[15][15]=
 
 short one(int x){
   short ans = 0;
-  for(; x; x>>=1) ans += x&1;
+  for(; x; x>>=1)
+    ans += x&1;
   return ans;
 }
 
@@ -33,9 +34,9 @@ int main(){
   memset(b, 0, sizeof(b));
   for(int i = 1; i<1<<15; i++)
     for(short j = 0; j<15; j++)
-      if((1<<j)&i){
-	b[i] = max(b[i], short(b[i^(1<<j)]+a[one(i)-1][j]));
-	ans = max(ans, b[i]);
+      if((1<<j)&i) {
+        b[i] = max(b[i], short(b[i^(1<<j)]+a[one(i)-1][j]));
+        ans = max(ans, b[i]);
       }
   printf("%d\n", ans);
   return 0;
